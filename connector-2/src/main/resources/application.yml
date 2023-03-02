@@ -7,13 +7,13 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848  #注册进Nacos
+        server-addr: localhost:8848  #注册进Nacos
     sentinel:
       transport:
         port: 9999   #指定和Sentinel控制台交互的端口
-        dashboard: 127.0.0.1:8888  #Sentinel控制台服务地址
+        dashboard: 120.46.213.254:8888  #Sentinel控制台服务地址
   redis:
-    host: localhost
+    host: 120.46.213.254
     port: 6379
     password:
     database: 0
@@ -24,12 +24,12 @@ feign:
     enabled: true
 
 rocketmq:
-  name-server: localhost:9876
+  name-server: 120.46.213.254:9876
   producer:
     group: MSG_GROUP
 
 netty:
-  connector-url: localhost_8031
+  connector-url: 120.46.213.254_8031
   port: 9001
 
 dubbo:
@@ -40,10 +40,10 @@ dubbo:
     port: 20891  # dubbo服务暴露的端口
   registry:
     protocol: nacos
-    address: 127.0.0.1:8848
+    address: 120.46.213.254:8848
   config-center:
     protocol: nacos
-    address: 127.0.0.1:8848
+    address: 120.46.213.254:8848
   metadata-report:
     protocol: nacos
-    address: 127.0.0.1:8848
+    address: 120.46.213.254:8848

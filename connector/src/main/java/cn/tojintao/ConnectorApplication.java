@@ -1,6 +1,5 @@
 package cn.tojintao;
 
-import cn.tojintao.netty.NettyServer;
 import cn.tojintao.util.SpringUtil;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

@@ -1,5 +1,8 @@
 package cn.tojintao.netty;
 
+import cn.tojintao.concurrent.FutureTaskScheduler;
+import cn.tojintao.distributed.ImWorker;
+import cn.tojintao.distributed.WorkerRouter;
 import cn.tojintao.service.RedisService;
 import cn.tojintao.util.SpringUtil;
 import com.alibaba.nacos.api.naming.NamingFactory;
@@ -21,15 +24,14 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static cn.tojintao.constant.ServerConstants.*;
+
 /**
  * @author cjt
  * @date 2022/5/4 20:56
  */
 public class NettyServer {
-    private static final String nacosServer = "http://localhost:8848";
-    private static final String nettyName = "netty-service";
 
-    private static final int PORT = 9000;
 
     private static NettyServer nettyServer = new NettyServer();
 
@@ -53,9 +55,28 @@ public class NettyServer {
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChatServerInitializer());
-            InetSocketAddress socketAddress = new InetSocketAddress(PORT);
+            // changed
+            String IP = InetAddress.getLocalHost().getHostName();
+            InetSocketAddress socketAddress = new InetSocketAddress(IP, PORT);
             ChannelFuture channelFuture = serverBootstrap.bind(socketAddress).sync();
             channelFuture.syncUninterruptibly();
+            // 服务器内部节点路由
+            ImWorker.getInst().setLocalNode(IP, PORT);
+
+            // 异步初始化服务器节点链接
+            FutureTaskScheduler.add(() ->
+            {
+                /**
+                 * 注册nacos服务
+                 */
+                ImWorker.getInst().init();
+
+                /**
+                 * 监控nacos服务列表，初始化内网路由表
+                 */
+                WorkerRouter.getInst().init();
+            });
+
             channel = channelFuture.channel();
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
@@ -63,12 +84,6 @@ public class NettyServer {
                     nettyServer.stop();
                 }
             });
-
-            //获取nacos服务
-            NamingService namingService = NamingFactory.createNamingService(nacosServer);
-            InetAddress address = InetAddress.getLocalHost();
-            //将服务注册到注册中心
-            namingService.registerInstance(nettyName, address.getHostAddress(), PORT);
 
             channelFuture.channel().closeFuture().syncUninterruptibly();
         } catch (Exception e) {
@@ -117,7 +132,8 @@ public class NettyServer {
             pipeline.addLast(new IdleStateHandler(READ_IDLE_TIME_OUT, WRITE_IDLE_TIME_OUT, ALL_IDLE_TIME_OUT, TimeUnit.SECONDS));
             pipeline.addLast(new HeartBeatHandler());
             //自定义Handler，处理业务逻辑
-            pipeline.addLast(new ChatHandler());
+            pipeline.addLast("login", new LoginHandler());
+            pipeline.addLast("chat", new ChatHandler());
         }
     }
 

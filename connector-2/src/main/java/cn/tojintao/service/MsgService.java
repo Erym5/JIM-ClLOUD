@@ -179,7 +179,7 @@ public class MsgService {
             PushService pushService = referenceConfig.get();
             int dubboPort = Integer.parseInt(redisService.getDubboPort(receiverUrl));
             //动态指定IP调用
-            UserSpecifiedAddressUtil.setAddress(new Address("127.0.0.1", dubboPort, true));
+            UserSpecifiedAddressUtil.setAddress(new Address("120.46.213.254", dubboPort, true));
             //使用rpc调用进行转发
             pushService.pushGroupMsg(groupMessage);
         }

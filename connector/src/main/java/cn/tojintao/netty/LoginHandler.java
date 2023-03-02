@@ -1,11 +1,10 @@
 package cn.tojintao.netty;
 
-import cn.tojintao.common.ChatTypeEnum;
 import cn.tojintao.common.MsgActionEnum;
-import cn.tojintao.model.entity.Message;
+import cn.tojintao.concurrent.CallbackTask;
+import cn.tojintao.concurrent.CallbackTaskScheduler;
 import cn.tojintao.model.protocol.ChatMsg;
 import cn.tojintao.model.protocol.DataContent;
-import cn.tojintao.service.MsgService;
 import cn.tojintao.service.RedisService;
 import cn.tojintao.util.SpringUtil;
 import com.alibaba.fastjson.JSON;
@@ -17,13 +16,10 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
-/**
- * @author cjt
- * @date 2022/5/4 21:22
- */
 @Slf4j
-public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class LoginHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
     /**
      * 用于记录和管理所有客户端(Client)的管道组ChannelGroup
@@ -40,26 +36,62 @@ public class ChatHandler extends SimpleChannelInboundHandler<TextWebSocketFrame>
         Integer action = dataContent.getAction();
         ChatMsg chatMsg = dataContent.getChatMsg();
         //根据消息类型执行不同操作
-        if (action.equals(MsgActionEnum.CHAT.type)) { //聊天行为
-            Integer senderId = chatMsg.getSenderId();
-            Integer receiverId = chatMsg.getReceiverId();
-            String message = chatMsg.getMessage();
-            Integer type = chatMsg.getType();
-            RedisService redisService = SpringUtil.getBean(RedisService.class);
-            if (redisService.isBan(senderId)) return; //禁言
-            MsgService msgService = SpringUtil.getBean(MsgService.class);
-            if (type.equals(ChatTypeEnum.GROUP.getType())) {
-                log.info("senderId:" + senderId + ",sendGroupMessage:" + message);
-                msgService.sendGroupMessage(senderId, receiverId, message);
-            } else if (type.equals(ChatTypeEnum.PERSONAL.getType())) {
-                log.info("senderId:" + senderId + ",sendMessage:" + message);
-                msgService.sendMessage(senderId, receiverId, message);
-            }
-        } else if (action.equals(MsgActionEnum.KEEPALIVE.type)) {
-            log.info("收到来自channel为【" + channel + "】的心跳包");
+        if (action.equals(MsgActionEnum.CONNECT.type)) { //初始化连接行为
+            loginProcess(ctx, channel, chatMsg, log);
         }
+
+        //异步任务，处理登录的逻辑
+        CallbackTaskScheduler.add(new CallbackTask<Boolean>()
+        {
+            @Override
+            public Boolean execute() throws Exception
+            {
+                return loginProcess(ctx, channel, chatMsg, log);
+
+            }
+
+            //异步任务返回
+            @Override
+            public void onBack(Boolean r)
+            {
+                if (r)
+                {
+//                    ctx.pipeline().remove(LoginRequestHandler.this);
+                    log.info("登录成功:");
+
+//                    ctx.pipeline().addAfter("login", "chat",   chatRedirectHandler);
+                    ctx.pipeline().remove("login");
+                } else
+                {
+                    ctx.channel().close();
+                    log.info("登录失败:" );
+
+                }
+
+            }
+            //异步任务异常
+
+            @Override
+            public void onException(Throwable t)
+            {
+                t.printStackTrace();
+                log.info("登录失败:" );
+                ctx.channel().close();
+            }
+        });
+
     }
 
+
+    static boolean loginProcess(ChannelHandlerContext ctx, Channel channel, ChatMsg chatMsg, Logger log) {
+        Integer userId = chatMsg.getSenderId();
+        UserChannelRelation.put(userId, channel);   //本地新增连接
+        UserChannelRelation.put(ctx.channel(), userId);
+        RedisService redisService = SpringUtil.getBean(RedisService.class);
+        redisService.online(userId);    //用户上线，更新用户所在netty节点
+        log.info("用户id:" + userId + ", channel:" + UserChannelRelation.getChannel(userId));
+        return true;
+    }
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         log.info("客户端连接：channel id 为：" + ctx.channel().id().asLongText());

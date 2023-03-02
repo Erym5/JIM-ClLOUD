@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Set;
 
 /**
@@ -16,8 +18,16 @@ public class RedisService {
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
-    @Value("${netty.connector-url}")
+    @Value("${netty.port}")
+    String port;
     public String connectorUrl;
+    {
+        try {
+            connectorUrl = InetAddress.getLocalHost().getHostName() + ":" + port;
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static final String RELATION_KEY = "user:connector:relation";
     private static final String ONLINE_USER = "online_user";

@@ -7,12 +7,12 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848  #注册进Nacos
+        server-addr: localhost:8848  #注册进Nacos
   datasource:
     #mysql
     username: root
-    password: 123456
-    url: jdbc:mysql://localhost:3306/mychat?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+    password: Dhj1314520
+    url: jdbc:mysql://120.46.213.254:3306/mychat?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     #druid数据源
@@ -34,15 +34,15 @@ spring:
       useGlobalDataSourceStat: true
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
   redis:
-    host: 112.74.175.57
+    host: 120.46.213.254
     port: 6379
-    password: Chen13058191889
+    password:
     database: 0
 
 rocketmq:
-  name-server: localhost:9876
+  name-server: 120.46.213.254:9876
 elasticsearch:
-  url: localhost:9200
+  url: 120.46.213.254:9200
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

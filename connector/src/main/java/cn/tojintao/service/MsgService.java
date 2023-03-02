@@ -1,6 +1,8 @@
 package cn.tojintao.service;
 
 import cn.tojintao.constant.MsgConstant;
+import cn.tojintao.distributed.PeerSender;
+import cn.tojintao.distributed.WorkerRouter;
 import cn.tojintao.feign.UserInfoService;
 import cn.tojintao.model.entity.Group;
 import cn.tojintao.model.entity.GroupMessage;
@@ -16,11 +18,14 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +37,7 @@ import java.util.Set;
 @Slf4j
 @Component
 public class MsgService {
+    @Qualifier("cn.tojintao.feign.UserInfoService")
     @Autowired
     private UserInfoService userInfoService;
     @Autowired
@@ -41,8 +47,16 @@ public class MsgService {
     @Resource
     private RestTemplate restTemplate;
 
-    @Value("${netty.connector-url}")
+    @Value("${netty.port}")
+    String port;
     public String connectorUrl;
+    {
+        try {
+            connectorUrl = InetAddress.getLocalHost().getHostName() + ":" + port;
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 私聊
@@ -86,14 +100,23 @@ public class MsgService {
             push(receiverId, messageVo);
         } else {
             //不在本机: 转发消息
-            receiverUrl = "http://" + receiverUrl.replace("_", ":") + "/push/pushMsg";
-            restTemplate.postForObject(receiverUrl, messageVo, String.class);
+            /*内部路由转发*/
+            PeerSender sender =
+                    WorkerRouter.getInst().route(receiverUrl);
+            if(null!=sender)
+            {
+                sender.writeAndFlush(messageVo);
+            }
+            /*URL短链接短发，耗能*/
+//            receiverUrl = "http://" + receiverUrl.replace("_", ":") + "/push/pushMsg";
+//            restTemplate.postForObject(receiverUrl, messageVo, String.class);
         }
     }
 
     /**
      * 消息推送
      */
+    // 本地缓存无法使用？？？
     public void push(Integer receiverId, MessageVo messageVo) {
         Channel channel = UserChannelRelation.getChannel(receiverId);
         if (channel != null) {

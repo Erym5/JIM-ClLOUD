@@ -16,6 +16,7 @@ import cn.tojintao.service.ChatService;
 import cn.tojintao.service.SnowflakeService;
 import cn.tojintao.feign.UserInfoService;
 import com.alibaba.fastjson.JSON;
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.action.search.SearchRequest;
@@ -224,6 +225,7 @@ public class ChatServiceImpl implements ChatService {
      * @return
      */
     @Override
+    @GlobalTransactional
     public ResultInfo<?> outGroup(Integer userId, Integer groupId) {
         chatMapper.outGroup(userId, groupId);
         return ResultInfo.success(CodeEnum.SUCCESS, "退出成功");

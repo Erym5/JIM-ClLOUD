@@ -7,7 +7,8 @@ package cn.tojintao.common;
 public enum ChatTypeEnum {
 
     GROUP(1, "群聊"),
-    PERSONAL(2, "私聊");
+    PERSONAL(2, "私聊"),
+    Announce(3, "公告");
 
     public final Integer type;
     public final String content;
