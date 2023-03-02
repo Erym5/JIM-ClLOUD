@@ -1,0 +1,63 @@
+server:
+  port: 9401
+spring:
+  cache:
+    redis:
+      cache-null-values: true
+      key-prefix: 'casbin:springboot:'
+      time-to-live: 1000
+      use-key-prefix: true
+    type: redis
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      auto-commit: true
+      connection-test-query: SELECT 1
+      connection-timeout: 30000
+      idle-timeout: 30000
+      jdbc-url: jdbc:mysql://120.46.213.254:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+      max-lifetime: 1800000
+      maximum-pool-size: 15
+      minimum-idle: 5
+      password: Dhj1314520
+      pool-name: CASBIN-HIKARICP
+      username: root
+    jdbc-url: jdbc:mysql://120.46.213.254.:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    password: Dhj1314520
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://120.46.213.254:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+  application:
+    name: micro-oauth2-auth
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 120.46.213.254:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  redis:
+    database: 0
+    port: 6379
+    host: 120.46.213.254
+    password: Dhj1314520
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+casbin:
+  autoSave: true
+  enableCasbin: true
+  enableWatcher: false
+  exception: removePolicyFailed
+  initializeSchema: create
+  model: classpath:rbac_model.conf
+  policy: classpath:rbac_policy.csv
+  storeType: jdbc
+  useDefaultModelIfModelNotSetting: true
+  useSyncedEnforcer: false
+  watcherType: redis
+
+

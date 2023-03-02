@@ -1,0 +1,145 @@
+<html lang="en">
+<head>
+    <title>聊天记录检索</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.min.js"></script>
+</head>
+<body>
+
+<!-- 反色导航条组件  -->
+<nav class="navbar navbar-inverse" style="margin-top: 0px;">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">MyChat</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="javascript:void(0)" onclick="back()">返回聊天界面</a>
+                </li>
+                <li>
+                    <a href="message.html">聊天记录检索</a>
+                </li>
+                <li>
+                    <a href="friend.html">好友管理</a>
+                </li>
+                <li>
+                    <a href="request.html">好友请求</a>
+                </li>
+                <li>
+                    <a href="group.html">群聊管理</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <h2>历史聊天记录全文检索</h2><br>
+    <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+            <label for="keyword">搜索关键词</label>
+            <input type="text" id="keyword" class="form-control" placeholder="请输入搜索关键词" autocomplete="off">
+        </div>
+        <button type="button" class="btn btn-success" onclick="search()">全文检索</button>
+    </form>
+
+    <br><hr><br>
+
+    <h2>历史聊天记录</h2><br>
+
+    <table border="1" class="table table-bordered table-hover">
+
+        <tr class="info">
+            <th>发送者</th>
+            <th>消息类型</th>
+            <th>群组名</th>
+            <th>消息内容</th>
+            <th>发布时间</th>
+        </tr>
+        <tbody id="t_body">
+
+        </tbody>
+
+    </table>
+</div>
+
+<script>
+    let serverUrl = 'http://localhost:8080/'
+
+    function back(){
+        $(window).attr("location", serverUrl + "function.html?"+"type=0&boxId=0") ;
+    }
+
+    //与好友聊天
+    function tochat(boxId){
+        $(window).attr("location", serverUrl + "function.html?"+"type=2&boxId="+boxId) ;
+    }
+
+    //搜索
+    function search(){
+        $.ajax({
+            url: serverUrl + "chat/searchMessage",
+            method: "GET",
+            data: {
+                userId: window.localStorage.getItem("userId"),
+                keyword: $('#keyword').val()
+            },
+            async: true,
+            success: function (data) {
+                if (data.code == 200) {
+                    if (data.data != null) {
+                        var table = "";
+                        var li = "";
+                        var list = data.data;
+                        $.each(list,function (i,rs) {
+                            table += "<tr>" +
+                                "<td>" + list[i].userName + "</td>";
+                            if(list[i].groupId){
+                                table += "<td>群聊</td>";
+                                table += "<td>" + list[i].groupName + "</td>";
+                            }else{
+                                table += "<td>私聊</td>";
+                                table += "<td></td>";
+                            }
+                            table +=
+                                "<td>" + list[i].content + "</td>" +
+                                "<td>" + formatDate(list[i].gmtCreate) + "</td>" +
+                                "</tr>";
+                            $("#t_body").html(table);
+                            $("#lis").html(li);
+                        })
+                    }
+                } else {
+                    alert(data.msg);
+                }
+            }
+        })
+    }
+
+    function formatDate(input) {
+        var date = new Date(input);
+        var year = date.getFullYear(),
+            month = ("0" + (date.getMonth() + 1)).slice(-2),
+            sdate = ("0" + date.getDate()).slice(-2),
+            hour = ("0" + date.getHours()).slice(-2),
+            minute = ("0" + date.getMinutes()).slice(-2),
+            second = ("0" + date.getSeconds()).slice(-2);
+        var result = year + "-"+ month +"-"+ sdate +" "+ hour +":"+ minute +":" + second;
+        return result;
+    }
+
+</script>
+
+</body>
+</html>

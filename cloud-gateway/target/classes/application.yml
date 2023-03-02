@@ -1,0 +1,111 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: cloud-gateway
+  redis:
+    database: 0
+    port: 6379
+    host: 120.46.213.254
+    password: Dhj1314520
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+      #配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      filters: stat,wall
+      maxPoolPreparedStatementPerConnectionSize: 20
+      useGlobalDataSourceStat: true
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+    jdbc-url: jdbc:mysql://120.46.213.254.:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    password: Dhj1314520
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://120.46.213.254:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    username: root
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 120.46.213.254:8848  #注册进Nacos
+    sentinel:
+      transport:
+        port: 9999   #指定和Sentinel控制台交互的端口
+        dashboard: 127.0.0.1:8888  #Sentinel控制台服务地址
+      datasource: #添加Nacos数据源配置，sentinel持久化
+        ds1:
+          nacos:
+            server-addr: 120.46.213.254:8848
+            dataId: gateway-sentinel
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: gw-flow
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-headers: "*"
+            allow-credentials: true
+            allowed-methods: "*"
+      discovery:
+        locator:
+          enabled: true  #开启从注册中心动态创建路由的功能，利用微服务名进行路由
+      routes:   #路由配置
+        - id: user-info-service    #路由的ID，没有固定规则但要求唯一，建议与服务名对应
+          uri: lb://user-info #匹配后提供服务的路由地址
+          predicates:
+            - Path=/user-info/**
+        - id: chat-service
+          uri: lb://chat-service
+          predicates:
+            - Path=/chat/**
+        - id: netty-websocket
+          uri: lb:ws://netty-service/ws
+          predicates:
+            - Path=/ws/**
+        - id: user-auth
+          uri: lb://user-auth
+          predicates:
+            - Path=/user-auth/**
+          filters:
+            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:9401/rsa/publicKey' #配置RSA的公钥访问地址
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+secure:
+  ignore:
+    urls: #配置白名单路径
+      - "/actuator/**"
+      - "/auth/oauth/token"
+
+casbin:
+  autoSave: true
+  enableCasbin: true
+  enableWatcher: false
+  exception: removePolicyFailed
+  initializeSchema: create
+  model: classpath:rbac_model.conf
+  policy: classpath:rbac_policy.csv
+  storeType: jdbc
+  useDefaultModelIfModelNotSetting: true
+  useSyncedEnforcer: false
+  watcherType: redis
