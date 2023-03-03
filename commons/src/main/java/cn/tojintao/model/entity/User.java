@@ -4,7 +4,7 @@ package cn.tojintao.model.entity;
  * @author cjt
  * @date 2021/6/19 11:14
  */
-public class User {
+public class   User {
 
     private Integer userId;
 

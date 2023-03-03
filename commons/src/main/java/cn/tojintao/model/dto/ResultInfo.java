@@ -37,6 +37,9 @@ public class ResultInfo<T> {
     public static <T> ResultInfo<T> success (Integer code, String msg, T data){
         return new ResultInfo<T>(code, msg, data);
     }
+    public static <T> ResultInfo<T> success (T data){
+        return new ResultInfo<T>(CodeEnum.SUCCESS, data);
+    }
 
     public static <T> ResultInfo<T> success (CodeEnum codeEnum){
         return new ResultInfo<T>(codeEnum);

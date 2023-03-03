@@ -12,7 +12,7 @@ spring:
     #mysql
     username: root
     password: Dhj1314520
-    url: jdbc:mysql://120.46.213.254:3306/mychat?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
+    url: jdbc:mysql://localhost:3306/mychat?useSSL=false&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     #druid数据源
@@ -34,7 +34,7 @@ spring:
       useGlobalDataSourceStat: true
       connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
   redis:
-    host: 120.46.213.254
+    host: localhost
     port: 6379
     password: Dhj1314520
     database: 0

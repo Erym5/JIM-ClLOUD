@@ -1,16 +1,14 @@
 package cn.tojintao.controller;
 
 import cn.tojintao.model.dto.ResultInfo;
+import cn.tojintao.model.dto.UserDTO;
 import cn.tojintao.model.entity.Group;
 import cn.tojintao.model.entity.User;
 import cn.tojintao.service.UserService;
 import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +24,11 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @ApiOperation(value = "用户查找")
+    @GetMapping("/loadUserByUsername")
+    public UserDTO loadUserByUsername(@RequestParam("userName") String userName) throws Exception {
+        return userService.loadloadUserByUsername(userName);
+    }
 
     @ApiOperation(value = "用户登录")
     @PostMapping("/login")

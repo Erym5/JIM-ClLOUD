@@ -1,17 +1,22 @@
 package cn.tojintao.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.tojintao.common.CodeEnum;
 import cn.tojintao.exception.ConditionException;
 import cn.tojintao.mapper.UserMapper;
 import cn.tojintao.model.dto.ResultInfo;
+import cn.tojintao.model.dto.UserDTO;
 import cn.tojintao.model.entity.Group;
 import cn.tojintao.model.entity.User;
 import cn.tojintao.service.UserService;
 import cn.tojintao.util.TokenUtil;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -20,12 +25,28 @@ import java.util.List;
  * @date 2021/6/19 16:48
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
     private static final String BAN_USER = "ban_user:";
+
+    @Override
+    public UserDTO loadloadUserByUsername(@RequestParam("userName") String userName){
+        log.info("user-info");
+        User user = userMapper.loadUserByUsername(userName);
+        if (user != null) {
+            UserDTO userDto = new UserDTO();
+            log.info("User:"+user);
+            BeanUtil.copyProperties(user,userDto);
+            userDto.setRoles(CollUtil.toList("前台会员"));
+            log.info("UserDTO:"+userDto);
+            return userDto;
+        }
+        return null;
+    }
 
     /**
      * 登录

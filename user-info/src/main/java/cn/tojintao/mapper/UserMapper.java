@@ -13,6 +13,7 @@ import java.util.List;
  */
 @Repository
 public interface UserMapper {
+    User loadUserByUsername(@Param("userName") String userName);
 
     User login(@Param("userName") String userName, @Param("password") String password);
 

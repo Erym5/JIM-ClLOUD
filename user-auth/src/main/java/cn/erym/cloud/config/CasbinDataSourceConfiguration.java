@@ -12,6 +12,6 @@ public class CasbinDataSourceConfiguration {
     @Bean
     @CasbinDataSource
     public DataSource casbinDataSource() {
-        return DataSourceBuilder.create().url("jdbc:mysql://120.46.213.254:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai").username("root").password("Dhj1314520").build();
+        return DataSourceBuilder.create().url("jdbc:mysql://localhost:3306/mychat?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai").username("root").password("Dhj1314520").build();
     }
 }

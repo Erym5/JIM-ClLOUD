@@ -1,10 +1,12 @@
 package cn.erym.cloud.service;
 
 import cn.erym.cloud.feign.UserInfoService;
+import cn.hutool.core.collection.CollUtil;
 import cn.tojintao.constant.MessageConstant;
 import cn.erym.cloud.domain.model.SecurityUser;
 import cn.tojintao.model.dto.UserDTO;
 import cn.tojintao.constant.AuthConstant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.CredentialsExpiredException;
@@ -16,14 +18,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户管理业务类
 user
  */
 @Service
+@Slf4j
 public class UserServiceImpl2 implements UserDetailsService {
 
     private List<UserDTO> userList;
@@ -41,7 +47,7 @@ public class UserServiceImpl2 implements UserDetailsService {
 //        userList.add(new UserDTO(1L,"macro", password,1, CollUtil.toList("ADMIN")));
 //        userList.add(new UserDTO(2L,"andy", password,1, CollUtil.toList("TEST")));
 //    }
-
+//
 //    @Override
 //    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 //        List<UserDTO> findUserList = userList.stream().filter(item -> item.getUsername().equals(username)).collect(Collectors.toList());
@@ -63,14 +69,17 @@ public class UserServiceImpl2 implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String clientId = request.getParameter("client_id");
+        log.info("User");
         UserDTO userDto = null;
         if(AuthConstant.PORTAL_CLIENT_ID.equals(clientId)){
             userDto = userInfoService.loadUserByUsername(username);
         }
+        log.info("User:"+userDto);
         if (userDto==null) {
             throw new UsernameNotFoundException(MessageConstant.USERNAME_PASSWORD_ERROR);
         }
         userDto.setClientId(clientId);
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         SecurityUser securityUser = new SecurityUser(userDto);
         if (!securityUser.isEnabled()) {
             throw new DisabledException(MessageConstant.ACCOUNT_DISABLED);
@@ -81,6 +90,7 @@ public class UserServiceImpl2 implements UserDetailsService {
         } else if (!securityUser.isCredentialsNonExpired()) {
             throw new CredentialsExpiredException(MessageConstant.CREDENTIALS_EXPIRED);
         }
+        log.info("security:"+securityUser);
         return securityUser;
     }
 

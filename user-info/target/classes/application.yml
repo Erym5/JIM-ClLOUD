@@ -7,7 +7,7 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848  #注册进Nacos
+        server-addr: 120.46.213.254:8848  #注册进Nacos
   datasource:
     #mysql
     username: root

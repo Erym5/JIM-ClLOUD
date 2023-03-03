@@ -8,6 +8,10 @@
         select * from user where user_name = #{userName} and password = #{password}
     </select>
 
+    <select id="loadUserByUsername" parameterType="cn.tojintao.model.entity.User" resultType="cn.tojintao.model.entity.User">
+        select * from user where user_name = #{userName}
+    </select>
+
     <select id="getUserById" resultType="cn.tojintao.model.entity.User">
         select * from user where user_id = #{userId}
     </select>

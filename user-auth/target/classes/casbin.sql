@@ -160,10 +160,10 @@ INSERT INTO `sys_role` VALUES (2, 'test', '测试用户', '1', '2021-11-20 15:02
 INSERT INTO `sys_role` VALUES (3, 'opt', '运营', '1', '2021-11-21 00:08:16', '2021-11-21 00:08:18');
 
 -- ----------------------------
--- Table structure for sys_user
+-- Table structure for user
 -- ----------------------------
-DROP TABLE IF EXISTS `sys_user`;
-CREATE TABLE `sys_user`  (
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
   `tenant_id` int(0) NULL DEFAULT NULL,
   `login_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
@@ -176,14 +176,14 @@ CREATE TABLE `sys_user`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Records of sys_user
+-- Records of user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1, NULL, 'admin', '123456', 'admin', '2021-11-20 14:08:00', '2021-11-20 14:08:02', 1);
-INSERT INTO `sys_user` VALUES (2, NULL, 'alice', '123456', 'admin', '2021-11-20 15:02:27', '2021-11-20 15:02:29', 1);
-INSERT INTO `sys_user` VALUES (3, NULL, 'oldMan', '123456', 'admin', '2021-11-20 22:54:46', '2021-11-20 22:54:49', 1);
-INSERT INTO `sys_user` VALUES (4, NULL, 'vino', '123456', 'vino', NULL, '2021-11-20 23:18:56', 1);
-INSERT INTO `sys_user` VALUES (5, NULL, 'adam', '123456', 'adam', NULL, '2021-11-20 23:18:57', 1);
-INSERT INTO `sys_user` VALUES (6, NULL, 'andrew', '123456', 'andrew', NULL, '2021-11-20 23:19:45', 1);
-INSERT INTO `sys_user` VALUES (7, NULL, 'tony', '123456', 'tony', NULL, '2021-11-21 00:04:19', 1);
+INSERT INTO `user` VALUES (1, NULL, 'admin', '123456', 'admin', '2021-11-20 14:08:00', '2021-11-20 14:08:02', 1);
+INSERT INTO `user` VALUES (2, NULL, 'alice', '123456', 'admin', '2021-11-20 15:02:27', '2021-11-20 15:02:29', 1);
+INSERT INTO `user` VALUES (3, NULL, 'oldMan', '123456', 'admin', '2021-11-20 22:54:46', '2021-11-20 22:54:49', 1);
+INSERT INTO `user` VALUES (4, NULL, 'vino', '123456', 'vino', NULL, '2021-11-20 23:18:56', 1);
+INSERT INTO `user` VALUES (5, NULL, 'adam', '123456', 'adam', NULL, '2021-11-20 23:18:57', 1);
+INSERT INTO `user` VALUES (6, NULL, 'andrew', '123456', 'andrew', NULL, '2021-11-20 23:19:45', 1);
+INSERT INTO `user` VALUES (7, NULL, 'tony', '123456', 'tony', NULL, '2021-11-21 00:04:19', 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

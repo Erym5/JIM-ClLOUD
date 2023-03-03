@@ -1,9 +1,11 @@
 package cn.tojintao.service;
 
 import cn.tojintao.model.dto.ResultInfo;
+import cn.tojintao.model.dto.UserDTO;
 import cn.tojintao.model.entity.Group;
 import cn.tojintao.model.entity.User;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
  * @date 2021/6/19 16:47
  */
 public interface UserService {
+    UserDTO loadloadUserByUsername(@RequestParam("userName") String userName);
 
     ResultInfo<JSONObject> login(String userName, String password) throws Exception;
 

@@ -15,20 +15,20 @@ spring:
       connection-test-query: SELECT 1
       connection-timeout: 30000
       idle-timeout: 30000
-      jdbc-url: jdbc:mysql://120.46.213.254:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+      jdbc-url: jdbc:mysql://120.46.213.254:3306/mychat?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
       max-lifetime: 1800000
       maximum-pool-size: 15
       minimum-idle: 5
       password: Dhj1314520
       pool-name: CASBIN-HIKARICP
       username: root
-    jdbc-url: jdbc:mysql://120.46.213.254.:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    jdbc-url: jdbc:mysql://120.46.213.254:3306/mychat?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     password: Dhj1314520
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://120.46.213.254:3306/casbin?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://120.46.213.254:3306/mychat?characterEncoding=utf-8&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
   application:
-    name: micro-oauth2-auth
+    name: user-auth
   cloud:
     nacos:
       discovery:

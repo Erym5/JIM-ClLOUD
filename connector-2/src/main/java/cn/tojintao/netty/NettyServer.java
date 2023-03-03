@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * @date 2022/5/4 20:56
  */
 public class NettyServer {
-    private static final String nacosServer = "http://120.46.213.254:8848";
+    private static final String nacosServer = "http://localhost:8848";
     private static final String nettyName = "netty-service";
 
     private static final int PORT = 9001;
