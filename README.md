@@ -6,6 +6,16 @@
 行ABAC、RBAC权限模型集成，选取security oauth2为认证框架，较单一的security进行认证与鉴权更为快速的开发与解耦；与 gateway 整合，进行路由、鉴权。整合swagger文档。
 2. 完善Netty网络编程开发，增加线程池、建立路由表等
 
+## 数据库设计
+### RBAC E-R
+![img_2.png](img_2.png)
+### RBAC DB Table
+![img_4.png](img_4.png)
+### ABAC E-R
+![img_3.png](img_3.png)
+### ABAC DB Table
+![img_5.png](img_5.png)
+
 ## 项目进度
 暂时仅论证项目可行性，启动user-auth、gateway、user-info模块后输入![img.png](img.png)、![img_1.png](img_1.png)
 
